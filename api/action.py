@@ -1,6 +1,9 @@
 import web
 import re
 import base64
+import json
+import decimal
+import datetime
 from user import *
 from exception import *
 
@@ -18,7 +21,7 @@ class Action:
 		self.__auth_user_id = user.getByLoginAndPassword(self.getLogin(), self.getPassword())
 		
 		if self.__auth_user_id == False:
-			raise Unauthorized
+			raise Unauthorized('Wrong login or password')
 	
 	def __parseAuthData(self):
 		if self.__login == None or self.__password == None:
@@ -34,3 +37,22 @@ class Action:
 		
 	def getPassword(self):
 		return self.__password
+	
+	def getAuthUserId(self):
+		return self.__auth_user_id
+	
+	def prepareResult(self, result):
+		return json.dumps(result, cls=CustomJsonEncoder)
+
+class CustomJsonEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if isinstance(obj, decimal.Decimal):
+			return float(obj)
+		elif isinstance(obj, web.utils.IterBetter):
+			return list(obj)
+		elif isinstance(obj, web.utils.Storage):
+			return dict(obj)
+		elif isinstance(obj, datetime.date):
+			return obj.isoformat()
+		# Let the base class default method raise the TypeError
+		return json.JSONEncoder.default(self, obj)

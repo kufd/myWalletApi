@@ -4,9 +4,74 @@ import api
 render = web.template.render('api/templates/')
 
 urls = (
-  '/', 'User',
-  '/add', 'add'
+  '/v1/spendings/([0-9]+)', 'Spendings'
 )
+
+web.config.debug = False
+
+class Spendings(api.action.Action):
+	def POST(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		inputParams = web.input(
+			date=None, 
+			spendingName=None, 
+			amount=None, 
+			amountEncrypted=None, 
+			_method='post'
+		)
+		
+		spending = api.spending.Spending();
+		
+		spendingId = spending.add(**{
+			'userId': self.getAuthUserId(),
+			'date': inputParams.date,
+			'spendingName': inputParams.spendingName,
+			'amount': inputParams.amount,
+			'amountEncrypted': inputParams.amountEncrypted
+		});
+		
+		return self.prepareResult({"spendingId": spendingId})
+	
+	def GET(self):
+		
+		inputParams = web.input(dateBegin=None, dateEnd=None, _method='get')
+		
+		spending = api.spending.Spending()
+		list = spending.getList(
+			self.getAuthUserId(), 
+			dateBegin = inputParams.dateBegin, 
+			dateEnd = inputParams.dateEnd
+		)
+		
+		return self.prepareResult({'spendings': list})
+	
+	def PATCH(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		inputParams = web.input(_method='post')
+		
+		spending = api.spending.Spending()
+		updated = spending.update(spendingId, self.getAuthUserId(), **inputParams)
+		
+		return self.prepareResult({'updated': updated})
+	
+	def DELETE(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		spending = api.spending.Spending()
+		deleted = spending.delete(spendingId, self.getAuthUserId())
+		
+		return self.prepareResult({'deleted': deleted})
+	
+	def __checkSpendingExists(self, spendingId):
+		spending = api.spending.Spending()
+		if not spending.isExists(spendingId, spendingId):
+			raise api.exception.NotFound('spending not found')
+		
 
 class User(api.action.Action):
 	
@@ -23,36 +88,7 @@ class User(api.action.Action):
 		
 		return 'OK'
 	
-	def UPDATE(self):
-		
-		user = api.user.User()
-		user.update(
-			'test2', 
-			'', 
-			**{
-				'id': 'test3567', 
-			}
-		)
-		
-		return "OK"
-	
-	def POST(self):
-		
-		#get_input = web.input(_method='get')
-		#post_input = web.input(_method='post')
-		
-		user = api.user.User()
-		userId = user.create(**{
-			'login': 'test4', 
-			'name': 'test1', 
-			'email': 'test4', 
-			'password': 'test1', 
-			'lang': 'ua', 
-			'currency': 'usd', 
-			'useEncryption': '1',
-		})
-		
-		return userId
+
 	
 	
 	
@@ -70,6 +106,27 @@ class add:
 		raise web.seeother('/')
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":	 
+	
+	def errorProcessor(handler): 
+		
+		result = ''
+		
+		try:
+			result = handler() 
+		except web.HTTPError as e:
+			if e.__class__.__name__ == '_InternalError' :
+				raise api.exception.InternalError
+			else:
+				raise e 
+		return result
+	
 	app = web.application(urls, globals())
-	app.run()   
+	app.add_processor(errorProcessor)
+	app.run()
+		
+		
+		
+		
+		
+	   

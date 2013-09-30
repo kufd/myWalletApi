@@ -6,6 +6,7 @@ class Spending:
 	
 	__table = "spendings"
 	__fields = ('id', 'userId', 'date', 'spendingNameId', 'amount', 'amountEncrypted')
+	__fieldsUpdateAllowed = ('date', 'spendingNameId', 'amount', 'amountEncrypted')
 		
 	def add(self, **fields):
 
@@ -20,10 +21,53 @@ class Spending:
 		
 	def update(self, id, userId, **fields):
 		
-		self.__checkIsFieldsExists(**fields)
+		if 'spendingName' in fields:
+			spendingName = SpendingName()
+			fields['spendingNameId'] = spendingName.getIdByName(fields['spendingName'])
+			del fields['spendingName']
 		
-		where = "`id` = '"+id+"' AND `userId` = '"+userId+"'"
-		db.update(self.__table, where, **fields)
+		self.__checkIsFieldsExists(**fields)
+		self.__checkIsFieldsAllowedForUpdate(**fields)
+		
+		where = "`id` = '"+str(id)+"' AND `userId` = '"+str(userId)+"'"
+		updatedRowsNum = db.update(self.__table, where, **fields)
+		
+		return updatedRowsNum == 1
+		
+	def getList(self, userId, dateBegin = None, dateEnd = None):
+		
+		where = self.__table + ".userId = " + str(userId)
+		if dateBegin:
+			where += " AND " + self.__table + ".date >= '" + dateBegin + "'"
+		if dateEnd:
+			where += " AND " + self.__table + ".date <= '" + dateEnd + "'"
+			
+		spendingName = SpendingName()
+		
+		spendings = db.query(
+			"SELECT " + self.__table + ".*, " + spendingName.getTableName() + ".name AS spendingName \
+			FROM " + self.__table + " \
+			JOIN " + spendingName.getTableName() + " ON " + self.__table + ".spendingNameId = " + spendingName.getTableName() + ".id  \
+			WHERE " + where
+		)
+		
+		return spendings
+	
+	def isExists(self, id, userId):
+		
+		result = db.query("SELECT COUNT(*) AS foundSpendingsNumber FROM "+self.__table+" WHERE id='"+str(id)+"' AND userId='"+str(userId)+"'")
+		print result[0].foundSpendingsNumber == 1
+	
+	def delete(self, id, userId):
+		
+		vars = dict(id=id, userId=userId)
+		return db.delete(self.__table, vars=vars, where="id=$id AND userId=$userId") == 1
+	
+	def __checkIsFieldsAllowedForUpdate(self, **fields):
+		
+		for field in fields:
+			if not field in self.__fieldsUpdateAllowed:
+				raise Exception, 'Field "'+field+'" is not allowed for update'
 		
 	def __checkIsFieldsExists(self, **fields):
 		
@@ -35,6 +79,9 @@ class SpendingName:
 	
 	__table = "spendingName"
 	__fields = ('id', 'name')
+	
+	def getTableName(self):
+		return self.__table
 	
 	def __add(self, **fields):
 
