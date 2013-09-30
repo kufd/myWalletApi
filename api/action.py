@@ -2,26 +2,28 @@ import web
 import re
 import base64
 import json
-import decimal
-import datetime
 from user import *
+from spending import *
 from exception import *
+from utils import *
 
+''' Action  Action'''
 class Action:
 	
 	__login = None
 	__password = None
-	__auth_user_id = None
+	__auth_user = None
 	
 	def __init__(self):
 		
 		self.__parseAuthData()
 		
 		user = User()
-		self.__auth_user_id = user.getByLoginAndPassword(self.getLogin(), self.getPassword())
+		self.__auth_user = user.getByLoginAndPassword(self.getLogin(), self.getPassword())
 		
-		if self.__auth_user_id == False:
+		if self.__auth_user == None:
 			raise Unauthorized('Wrong login or password')
+		
 	
 	def __parseAuthData(self):
 		if self.__login == None or self.__password == None:
@@ -39,20 +41,86 @@ class Action:
 		return self.__password
 	
 	def getAuthUserId(self):
-		return self.__auth_user_id
+		return self.__auth_user.id
+	
+	def getAuthUser(self):
+		return self.__auth_user
 	
 	def prepareResult(self, result):
 		return json.dumps(result, cls=CustomJsonEncoder)
 
-class CustomJsonEncoder(json.JSONEncoder):
-	def default(self, obj):
-		if isinstance(obj, decimal.Decimal):
-			return float(obj)
-		elif isinstance(obj, web.utils.IterBetter):
-			return list(obj)
-		elif isinstance(obj, web.utils.Storage):
-			return dict(obj)
-		elif isinstance(obj, datetime.date):
-			return obj.isoformat()
-		# Let the base class default method raise the TypeError
-		return json.JSONEncoder.default(self, obj)
+
+''' Action  Spendings'''	
+class Spendings(Action):
+	def POST(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		inputParams = web.input(
+			date=None, 
+			spendingName=None, 
+			amount=None, 
+			amountEncrypted=None, 
+			_method='post'
+		)
+		
+		spending = Spending();
+		
+		spendingId = spending.add(**{
+			'userId': self.getAuthUserId(),
+			'date': inputParams.date,
+			'spendingName': inputParams.spendingName,
+			'amount': inputParams.amount,
+			'amountEncrypted': inputParams.amountEncrypted
+		});
+		
+		return self.prepareResult({"spendingId": spendingId})
+	
+	def GET(self):
+		
+		inputParams = web.input(dateBegin=None, dateEnd=None, _method='get')
+		
+		spending = Spending()
+		list = spending.getList(
+			self.getAuthUserId(), 
+			dateBegin = inputParams.dateBegin, 
+			dateEnd = inputParams.dateEnd
+		)
+		
+		return self.prepareResult({'spendings': list})
+	
+	def PATCH(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		inputParams = web.input(_method='post')
+		
+		spending = Spending()
+		updated = spending.update(spendingId, self.getAuthUserId(), **inputParams)
+		
+		return self.prepareResult({'updated': updated})
+	
+	def DELETE(self, spendingId):
+		
+		self.__checkSpendingExists(spendingId)
+		
+		spending = Spending()
+		deleted = spending.delete(spendingId, self.getAuthUserId())
+		
+		return self.prepareResult({'deleted': deleted})
+	
+	def __checkSpendingExists(self, spendingId):
+		spending = Spending()
+		if not spending.isExists(spendingId, spendingId):
+			raise NotFound('spending not found')
+		
+
+''' Action  AuthUsers'''	
+class AuthUsers(Action):
+	
+	def GET(self):
+		
+		user = self.getAuthUser()
+		del user['password']
+		
+		return self.prepareResult(user)

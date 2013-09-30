@@ -61,8 +61,20 @@ def deleteSpending():
 	print
 	print
 		
+		
+def getAuthUser():
+	
+	c = pycurl.Curl()
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/auth-users/')
+	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+	c.setopt(pycurl.USERPWD, 'test1:test1')
+	c.setopt(c.VERBOSE, True)
+	c.perform()
+	
+	print
+	print
 			
-deleteSpending()
+getAuthUser()
 
 
 

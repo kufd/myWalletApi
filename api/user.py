@@ -50,11 +50,11 @@ class User:
 		
 		''' Method returns user id if user exists or False otherwise '''
 		
-		result = False
+		result = None
 		myvar = dict(login=login, password=password)
 		users = db.select(self.__table, myvar, where="login = $login AND password = $password")
 		if len(users) == 1:
-			result = users[0].id
+			result = users[0]
 			
 		return result
 		
