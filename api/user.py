@@ -1,6 +1,7 @@
 __all__ = ["User",]
 
 import web
+import hashlib
 from db import connection as db
 
 
@@ -16,6 +17,7 @@ class User:
 		self.__checkIsFieldsExists(**fields)
 		self.__checkIsRequiredFieldsForInsertExists(**fields)
 
+		fields['password'] = self.__getPasswordHash(fields['password'])
 		fields['dateRegistration'] = web.SQLLiteral("NOW()")
 		userId = db.insert(self.__table, **fields)
 		return userId
@@ -24,6 +26,9 @@ class User:
 		
 		self.__checkIsFieldsExists(**fields)
 		self.__checkIsFieldsAllowedForUpdate(**fields)
+		
+		if 'password' in fields:
+			fields['password'] = self.__getPasswordHash(fields['password'])
 		
 		where = "`login` = '"+login+"'"
 		db.update(self.__table, where, **fields)
@@ -45,12 +50,16 @@ class User:
 		for field in self.__fieldsRequiredForInsert:
 			if not field in fields:
 				raise Exception, 'Field "'+field+'" required for insert not exists'
+			
+	def __getPasswordHash(self, password):
+		return hashlib.md5(hashlib.md5(password).hexdigest()).hexdigest()
 				
 	def getByLoginAndPassword(self, login, password):
 		
 		''' Method returns user id if user exists or False otherwise '''
 		
 		result = None
+		password = self.__getPasswordHash(password)
 		myvar = dict(login=login, password=password)
 		users = db.select(self.__table, myvar, where="login = $login AND password = $password")
 		if len(users) == 1:
