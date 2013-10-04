@@ -55,7 +55,7 @@ class Spending:
 		for field in self.__fields:
 			if field not in ['amountEncrypted']:
 				if self.__encryptionKey and field == 'amount':
-					fieldsToSelect.append("AES_DECRYPT(" + self.__table + ".amountEncrypted, '"+self.__encryptionKey+"') AS amount ")
+					fieldsToSelect.append(str("AES_DECRYPT(" + self.__table + ".amountEncrypted, "+web.db.sqlquote(self.__encryptionKey)+") AS amount "))
 				else:
 					fieldsToSelect.append(self.__table + "." + field)
 		fieldsToSelect.append(spendingName.getTableName() + ".name AS spendingName") 
@@ -84,7 +84,7 @@ class Spending:
 	def __encryptData(self, **fields):
 		
 		if self.__encryptionKey and 'amount' in fields:
-			fields['amountEncrypted'] = web.SQLLiteral("AES_ENCRYPT('"+fields['amount']+"', '"+self.__encryptionKey+"')")
+			fields['amountEncrypted'] = web.SQLLiteral("AES_ENCRYPT("+web.db.sqlquote(fields['amount'])+", "+web.db.sqlquote(self.__encryptionKey)+")")
 			del fields['amount']
 		
 		return fields

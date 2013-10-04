@@ -74,7 +74,7 @@ def getAuthUser():
 	print
 	print
 		
-addSpending()	
+#addSpending()	
 getSpendings()
 
 
