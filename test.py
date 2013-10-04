@@ -6,7 +6,7 @@ def addSpending():
 	
 	postData =  'date=2013-09-23&spendingName=hhhh&amount=20&amountEncrypted='
 	c = pycurl.Curl()
-	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/spendings')
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/spendings/')
 	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
 	c.setopt(pycurl.HTTPHEADER, ['Content-Type : application/x-www-form-urlencoded'])
 	c.setopt(pycurl.POST, 1)
@@ -73,8 +73,9 @@ def getAuthUser():
 	
 	print
 	print
-			
-getAuthUser()
+		
+addSpending()	
+getSpendings()
 
 
 

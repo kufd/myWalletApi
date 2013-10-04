@@ -7,6 +7,8 @@ class Spending:
 	__table = "spendings"
 	__fields = ('id', 'userId', 'date', 'spendingNameId', 'amount', 'amountEncrypted')
 	__fieldsUpdateAllowed = ('date', 'spendingNameId', 'amount', 'amountEncrypted')
+	
+	__encryptionKey = None
 		
 	def add(self, **fields):
 
@@ -15,6 +17,8 @@ class Spending:
 		del fields['spendingName']
 		
 		self.__checkIsFieldsExists(**fields)
+
+		fields = self.__encryptData(**fields)
 
 		spendingId = db.insert(self.__table, **fields)
 		return spendingId
@@ -28,6 +32,8 @@ class Spending:
 		
 		self.__checkIsFieldsExists(**fields)
 		self.__checkIsFieldsAllowedForUpdate(**fields)
+		
+		fields = self.__encryptData(**fields)
 		
 		where = "`id` = '"+str(id)+"' AND `userId` = '"+str(userId)+"'"
 		updatedRowsNum = db.update(self.__table, where, **fields)
@@ -44,8 +50,20 @@ class Spending:
 			
 		spendingName = SpendingName()
 		
+		
+		fieldsToSelect = []
+		for field in self.__fields:
+			if field not in ['amountEncrypted']:
+				if self.__encryptionKey and field == 'amount':
+					fieldsToSelect.append("AES_DECRYPT(" + self.__table + ".amountEncrypted, '"+self.__encryptionKey+"') AS amount ")
+				else:
+					fieldsToSelect.append(self.__table + "." + field)
+		fieldsToSelect.append(spendingName.getTableName() + ".name AS spendingName") 
+ 		
+ 		fieldsToSelect = ', '.join(fieldsToSelect)
+		
 		spendings = db.query(
-			"SELECT " + self.__table + ".*, " + spendingName.getTableName() + ".name AS spendingName \
+			"SELECT " + fieldsToSelect + "\
 			FROM " + self.__table + " \
 			JOIN " + spendingName.getTableName() + " ON " + self.__table + ".spendingNameId = " + spendingName.getTableName() + ".id  \
 			WHERE " + where
@@ -62,6 +80,18 @@ class Spending:
 		
 		vars = dict(id=id, userId=userId)
 		return db.delete(self.__table, vars=vars, where="id=$id AND userId=$userId") == 1
+	
+	def __encryptData(self, **fields):
+		
+		if self.__encryptionKey and 'amount' in fields:
+			fields['amountEncrypted'] = web.SQLLiteral("AES_ENCRYPT('"+fields['amount']+"', '"+self.__encryptionKey+"')")
+			del fields['amount']
+		
+		return fields
+		
+	
+	def setEncryptionKey(self, encryptionKey):
+		self.__encryptionKey = encryptionKey
 	
 	def __checkIsFieldsAllowedForUpdate(self, **fields):
 		

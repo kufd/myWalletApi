@@ -52,9 +52,7 @@ class Action:
 
 ''' Action  Spendings'''	
 class Spendings(Action):
-	def POST(self, spendingId):
-		
-		self.__checkSpendingExists(spendingId)
+	def POST(self):
 		
 		inputParams = web.input(
 			date=None, 
@@ -65,6 +63,9 @@ class Spendings(Action):
 		)
 		
 		spending = Spending();
+		
+		if self.getAuthUser().useEncryption:
+			spending.setEncryptionKey(self.getPassword())
 		
 		spendingId = spending.add(**{
 			'userId': self.getAuthUserId(),
@@ -81,12 +82,16 @@ class Spendings(Action):
 		inputParams = web.input(dateBegin=None, dateEnd=None, _method='get')
 		
 		spending = Spending()
+		
+		if self.getAuthUser().useEncryption:
+			spending.setEncryptionKey(self.getPassword())
+		
 		list = spending.getList(
 			self.getAuthUserId(), 
 			dateBegin = inputParams.dateBegin, 
 			dateEnd = inputParams.dateEnd
 		)
-		
+
 		return self.prepareResult({'spendings': list})
 	
 	def PATCH(self, spendingId):
@@ -96,6 +101,10 @@ class Spendings(Action):
 		inputParams = web.input(_method='post')
 		
 		spending = Spending()
+		
+		if self.getAuthUser().useEncryption:
+			spending.setEncryptionKey(self.getPassword())
+		
 		updated = spending.update(spendingId, self.getAuthUserId(), **inputParams)
 		
 		return self.prepareResult({'updated': updated})

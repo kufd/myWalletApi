@@ -33,6 +33,7 @@ class User:
 		where = "`login` = '"+login+"'"
 		db.update(self.__table, where, **fields)
 		
+		
 	def __checkIsFieldsAllowedForUpdate(self, **fields):
 		
 		for field in fields:
