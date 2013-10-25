@@ -16,13 +16,15 @@ class Action:
 	
 	def __init__(self):
 		
-		self.__parseAuthData()
+		#TODO FIX THIS HARDCODE
+		if (web.ctx.env.get('PATH_INFO') != '/v1/users' and web.ctx.env.get('PATH_INFO') != '/v1/users/') or web.ctx.env.get('REQUEST_METHOD') != 'POST':
+			self.__parseAuthData()
 		
-		user = User()
-		self.__auth_user = user.getByLoginAndPassword(self.getLogin(), self.getPassword())
+			user = User()
+			self.__auth_user = user.getByLoginAndPassword(self.getLogin(), self.getPassword())
 		
-		if self.__auth_user == None:
-			raise Unauthorized('Wrong login or password')
+			if self.__auth_user == None:
+				raise Unauthorized('Wrong login or password')
 		
 	
 	def __parseAuthData(self):
@@ -130,6 +132,22 @@ class AuthUsers(Action):
 	def GET(self):
 		
 		user = self.getAuthUser()
-		del user['password']
+		
+		if isinstance(user, User):
+			del user['password']
 		
 		return self.prepareResult(user)
+	
+''' Action  User'''	
+class Users(Action):
+	
+	def POST(self):
+		
+		inputParams = web.input(
+			_method='post'
+		)
+		
+		user = User()
+		userId = user.create(**inputParams)
+		
+		return self.prepareResult({"userId": userId})
