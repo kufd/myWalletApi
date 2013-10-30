@@ -1,6 +1,6 @@
 import web
-import api
-
+import api	
+	
 render = web.template.render('api/templates/')
 
 urls = (
@@ -34,8 +34,7 @@ if __name__ == "__main__":
 	app.add_processor(errorProcessor)
 	app.run()
 		
-		
-#TODO input data validation		
+	
 		
 		
 	   

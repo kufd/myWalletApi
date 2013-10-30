@@ -6,6 +6,7 @@ from user import *
 from spending import *
 from exception import *
 from utils import *
+from voluptuous import *
 
 ''' Action  Action'''
 class Action:
@@ -146,8 +147,60 @@ class Users(Action):
 		inputParams = web.input(
 			_method='post'
 		)
+		inputParams['useEncryption'] = int(inputParams['useEncryption']);
+		
+		self.__validatePOST(inputParams)
 		
 		user = User()
 		userId = user.create(**inputParams)
 		
 		return self.prepareResult({"userId": userId})
+	
+	def __validatePOST(self, fields):
+		
+		try:
+			schema = voluptuous.Schema(
+				{
+					voluptuous.Required('login'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=5), 
+						msg = 'Length of login must be greater than 5'
+					),
+					voluptuous.Required('name'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=2),
+						msg = 'Length of name must be greater than 2'
+					),
+ 					voluptuous.Required('lang'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=2, max=2),
+						msg = 'Wrong lang code'
+					),
+				 	voluptuous.Required('email'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=5),
+						msg = 'Wrong email'
+					),
+					voluptuous.Required('password'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=1),
+						msg = 'Empty password'
+					),
+					voluptuous.Required('confirmPassword'): voluptuous.All(
+						unicode, 
+						voluptuous.Length(min=1),
+						msg = 'Empty password confirmation'
+					),
+					voluptuous.Required('useEncryption'): voluptuous.All(
+						int, 
+						voluptuous.Range(min=0, max=1),
+						msg = 'Parameter useEncryption can be 1 or 0 only'
+					),
+				}, 
+				extra=True
+			)
+			print fields
+			schema(fields)
+		except MultipleInvalid as e:
+			raise InternalError(e.error_message)
+		
