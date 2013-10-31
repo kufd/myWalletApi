@@ -14,10 +14,13 @@ class InternalError(web.HTTPError):
     """500 Internal Server Error`."""
     message = "internal server error"
     
-    def __init__(self, message=None):
+    def __init__(self, message=None, code = None):
         status = '500 Internal Server Error'
         headers = {'Content-Type': 'text/json'}
-        message = json.dumps({'message': message or self.message})
+        message = {'message': message or self.message}
+        if code:
+        	message['code'] = code
+        message = json.dumps(message)
         web.HTTPError.__init__(self, status, headers, message)
         
 
