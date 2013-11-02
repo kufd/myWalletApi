@@ -151,10 +151,23 @@ class Users(Action):
 		validators.user.post(inputParams)
 		
 		inputParams['useEncryption'] = int(inputParams['useEncryption']);
+		del inputParams['confirmPassword']
 		
 		user = User()
 		userId = user.create(**inputParams)
 		
 		return self.prepareResult({"userId": userId})
+	
+	
+	def PATCH(self, login):
+		
+		inputParams = web.input(
+			_method='post'
+		)
+		
+		user = User()
+		userId = user.update(login, inputParams['password'], **inputParams)
+		
+		return self.prepareResult({})
 
 		
