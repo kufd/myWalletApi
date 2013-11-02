@@ -76,7 +76,7 @@ def getAuthUser():
 	
 	
 def registerUser():
-	postData =  'login=dddssss&name=hhhh&email=test8@ub.ua&password=1&lang=ua&currency=&useEncryption=1'
+	postData =  'login=test11&name=hhhh&email=test7@ub.ua1&password=1&confirmPassword=&lang=ua&currency=&useEncryption=1'
 	c = pycurl.Curl()
 	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/users/')
 	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])

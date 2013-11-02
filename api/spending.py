@@ -74,7 +74,7 @@ class Spending:
 	def isExists(self, id, userId):
 		
 		result = db.query("SELECT COUNT(*) AS foundSpendingsNumber FROM "+self.__table+" WHERE id='"+str(id)+"' AND userId='"+str(userId)+"'")
-		print result[0].foundSpendingsNumber == 1
+		return result[0].foundSpendingsNumber == 1
 	
 	def delete(self, id, userId):
 		

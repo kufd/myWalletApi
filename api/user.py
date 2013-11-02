@@ -69,4 +69,14 @@ class User:
 				result = users[0]
 			
 		return result
+	
+	def isLoginExists(self, login):
+		
+		result = db.query("SELECT COUNT(*) AS foundLoginNumber FROM "+self.__table+" WHERE login='"+login+"'")
+		return result[0].foundLoginNumber == 1
+	
+	def isEmailExists(self, email):
+		
+		result = db.query("SELECT COUNT(*) AS foundEmailNumber FROM "+self.__table+" WHERE email='"+email+"'")
+		return result[0].foundEmailNumber == 1
 		

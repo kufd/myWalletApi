@@ -147,9 +147,10 @@ class Users(Action):
 		inputParams = web.input(
 			_method='post'
 		)
-		inputParams['useEncryption'] = int(inputParams['useEncryption']);
 		
 		validators.user.post(inputParams)
+		
+		inputParams['useEncryption'] = int(inputParams['useEncryption']);
 		
 		user = User()
 		userId = user.create(**inputParams)
