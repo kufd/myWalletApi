@@ -22,7 +22,7 @@ class User:
 		userId = db.insert(self.__table, **fields)
 		return userId
 		
-	def update(self, login, currentPassword, **fields):
+	def update(self, login, **fields):
 		
 		self.__checkIsFieldsExists(**fields)
 		self.__checkIsFieldsAllowedForUpdate(**fields)
@@ -75,8 +75,11 @@ class User:
 		result = db.query("SELECT COUNT(*) AS foundLoginNumber FROM "+self.__table+" WHERE login='"+login+"'")
 		return result[0].foundLoginNumber == 1
 	
-	def isEmailExists(self, email):
+	def isEmailExists(self, email, ignoreUser = None):
 		
-		result = db.query("SELECT COUNT(*) AS foundEmailNumber FROM "+self.__table+" WHERE email='"+email+"'")
+		sql = "SELECT COUNT(*) AS foundEmailNumber FROM "+self.__table+" WHERE email='"+email+"'"
+		if ignoreUser:
+			sql += " AND login != '"+ignoreUser+"'"
+		result = db.query(sql)
 		return result[0].foundEmailNumber == 1
 		

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pycurl
+import requests
 
 def addSpending():
 	
@@ -88,9 +89,25 @@ def registerUser():
 	
 	print
 	print
+	
+def patchUser():
+	
+	c = pycurl.Curl()
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/users/test13/')
+	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+	c.setopt(pycurl.HTTPHEADER, ['Content-Type : application/x-www-form-urlencoded'])
+	c.setopt(pycurl.CUSTOMREQUEST, "PATCH")
+	c.setopt(pycurl.USERPWD, 'test13:123456')
+	c.setopt(pycurl.HTTPPOST, [('name', 'name1'), ('password', '123456')])
+	c.setopt(c.VERBOSE, True)
+	c.perform()
+	
+	
+	print
+	print
 		
 #addSpending()	
-registerUser()
+patchUser()
 
 
 

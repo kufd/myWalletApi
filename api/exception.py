@@ -31,4 +31,13 @@ class NotFound(web.HTTPError):
 		status = '404 Not Found'
 		headers = {'Content-Type': 'text/json'}
 		message = json.dumps({'message': message or self.message})
-		web.HTTPError.__init__(self, status, headers, message)        
+		web.HTTPError.__init__(self, status, headers, message)    
+		
+class Forbidden(web.HTTPError):
+	"""`403 Forbidden` error."""
+	message = "forbidden"
+	def __init__(self, message=None):
+		status = "403 Forbidden"
+		headers = {'Content-Type': 'text/json'}
+		message = json.dumps({'message': message or self.message})
+		web.HTTPError.__init__(self, status, headers, message)    

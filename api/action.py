@@ -144,9 +144,7 @@ class Users(Action):
 	
 	def POST(self):
 		
-		inputParams = web.input(
-			_method='post'
-		)
+		inputParams = web.input(_method='post')
 		
 		validators.user.post(inputParams)
 		
@@ -161,12 +159,26 @@ class Users(Action):
 	
 	def PATCH(self, login):
 		
-		inputParams = web.input(
-			_method='post'
-		)
+		if login != self.getAuthUser().login:
+			raise Forbidden
+		
+		inputParams = web.input(_method='patch')
+
+		inputParams['login'] = login
+		
+		validators.user.patch(inputParams)
+		
+		del inputParams['login']
+		del inputParams['password']
+		if 'newPassword' in inputParams and inputParams['newPassword']:
+			inputParams['password'] = inputParams['newPassword']
+		if 'newPassword' in inputParams:
+			del inputParams['newPassword']
+		if 'confirmNewPassword' in inputParams:
+			del inputParams['confirmNewPassword']
 		
 		user = User()
-		userId = user.update(login, inputParams['password'], **inputParams)
+		user.update(login, **inputParams)
 		
 		return self.prepareResult({})
 
