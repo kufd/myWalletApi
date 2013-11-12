@@ -99,7 +99,7 @@ class Spendings(Action):
 	
 	def PATCH(self, spendingId):
 		
-		self.__checkSpendingExists(spendingId)
+		self.__checkSpendingExists(spendingId, self.getAuthUserId())
 		
 		inputParams = web.input(_method='post')
 		
@@ -114,16 +114,16 @@ class Spendings(Action):
 	
 	def DELETE(self, spendingId):
 		
-		self.__checkSpendingExists(spendingId)
+		self.__checkSpendingExists(spendingId, self.getAuthUserId())
 		
 		spending = Spending()
 		deleted = spending.delete(spendingId, self.getAuthUserId())
 		
 		return self.prepareResult({'deleted': deleted})
 	
-	def __checkSpendingExists(self, spendingId):
+	def __checkSpendingExists(self, spendingId, userId):
 		spending = Spending()
-		if not spending.isExists(spendingId, spendingId):
+		if not spending.isExists(spendingId, userId):
 			raise NotFound('spending not found')
 		
 

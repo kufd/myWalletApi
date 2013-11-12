@@ -107,7 +107,7 @@ def patchUser():
 	print
 		
 #addSpending()	
-patchUser()
+getSpendings()
 
 
 
