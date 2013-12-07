@@ -61,10 +61,10 @@ class Spendings(Action):
 			date=None, 
 			spendingName=None, 
 			amount=None, 
-			amountEncrypted=None, 
+			amountEncrypted='', 
 			_method='post'
 		)
-		
+
 		spending = Spending();
 		
 		if self.getAuthUser().useEncryption:
