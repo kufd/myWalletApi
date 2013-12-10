@@ -14,6 +14,9 @@ errors = {
 	111 : 'Password and its confirmation are not equal',
 	112 : 'Wrong password',
 	113 : 'New password and its confirmation are not equal',
+	
+	114 : 'Length of name of spending must be greater than 1 and less than 255',
+	115 : 'Amount of spending must be float number',
 }
 
 def getMessage(code):

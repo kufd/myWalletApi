@@ -64,6 +64,11 @@ class Spendings(Action):
 			amountEncrypted='', 
 			_method='post'
 		)
+		
+		if inputParams['amount'].replace('.','',1).isdigit():
+			inputParams['amount'] = float(inputParams['amount'])
+		
+		validators.spending.post(inputParams)
 
 		spending = Spending();
 		
