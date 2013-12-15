@@ -130,7 +130,17 @@ class Spendings(Action):
 		spending = Spending()
 		if not spending.isExists(spendingId, userId):
 			raise NotFound('spending not found')
+
+''' Action  Spendings'''	
+class SpendingsTop(Action):
+	
+	def GET(self):
 		
+		spending = Spending()
+		
+		topSpendingsList = spending.getTopSpendings(self.getAuthUserId())
+			
+		return self.prepareResult(topSpendingsList)		
 
 ''' Action  AuthUsers'''	
 class AuthUsers(Action):

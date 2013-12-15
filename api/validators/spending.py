@@ -1,11 +1,9 @@
 __all__ = ["post",]
 
-import re
 import api.errors
 from exception import *
 from voluptuous import *
-from collections import defaultdict
-from api.user import *
+import datetime
 
 def processValidationException(e):
 	if 'required key not provided' in e.msg:
@@ -13,6 +11,15 @@ def processValidationException(e):
 	raise InternalError(api.errors.getMessage(int(e.error_message)), e.error_message)
 
 def post(fields):
+
+	def validateDate(date):
+		try:
+			datetime.datetime.strptime(date, '%Y-%m-%d')
+		except ValueError:
+			raise Invalid("116")
+		
+		return date
+
 
 	try:
 		schema = voluptuous.Schema(
@@ -25,6 +32,7 @@ def post(fields):
 					float, 
 					msg='115'
 				),
+				'date': validateDate,
 			}, 
 			extra=True, 
 			required=True

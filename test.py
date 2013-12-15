@@ -32,6 +32,17 @@ def getSpendings():
 	print
 	print
 	
+def getTopSpendings():
+	
+	c = pycurl.Curl()
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/spendings/top')
+	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+	c.setopt(pycurl.USERPWD, 'test13:1')
+	c.setopt(c.VERBOSE, True)
+	c.perform()
+	
+	print
+	print
 
 def updateSpending():
 	
@@ -107,7 +118,7 @@ def patchUser():
 	print
 		
 #addSpending()	
-getSpendings()
+getTopSpendings()
 
 
 

@@ -104,6 +104,29 @@ class Spending:
 		for field in fields:
 			if not field in self.__fields:
 				raise Exception, 'Field "'+field+'" not exists'
+			
+	def getTopSpendings(self, userId, limit = 10):
+		
+		spendingName = SpendingName()
+		
+		spendingsNames = db.query(
+			"SELECT "+
+				spendingName.getTableName()+".name "+
+			"FROM "+self.__table+" "+
+			"JOIN " + spendingName.getTableName() + " ON " + self.__table + ".spendingNameId = " + spendingName.getTableName() + ".id  "+
+			"WHERE "+
+				self.__table+".userId='"+str(userId)+"' "+
+			"GROUP BY "+self.__table+".spendingNameId \
+			ORDER BY COUNT(*) DESC\
+			LIMIT "+str(limit)
+		)
+		
+		result = list()
+		
+		for spendingsName in spendingsNames:
+			result.append(spendingsName.name)
+		
+		return result
 	
 class SpendingName:
 	

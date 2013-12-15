@@ -17,6 +17,7 @@ errors = {
 	
 	114 : 'Length of name of spending must be greater than 1 and less than 255',
 	115 : 'Amount of spending must be float number',
+	116 : 'Wrong date of spending',
 }
 
 def getMessage(code):
