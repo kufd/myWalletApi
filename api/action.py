@@ -183,18 +183,45 @@ class Users(Action):
 		
 		validators.user.patch(inputParams)
 		
-		del inputParams['login']
-		del inputParams['password']
-		if 'newPassword' in inputParams and inputParams['newPassword']:
-			inputParams['password'] = inputParams['newPassword']
-		if 'newPassword' in inputParams:
-			del inputParams['newPassword']
-		if 'confirmNewPassword' in inputParams:
-			del inputParams['confirmNewPassword']
+		inputParams['useEncryption'] = int(inputParams['useEncryption'])
 		
-		user = User()
-		user.update(login, **inputParams)
-		
+		with db.transaction():
+
+			if self.getAuthUser().useEncryption and 'newPassword' in inputParams or self.getAuthUser().useEncryption != inputParams['useEncryption']:
+
+				spending = Spending()
+				oldKey = None
+				newKey = None
+
+				if self.getAuthUser().useEncryption and 'newPassword' in inputParams:
+					oldKey = self.getPassword()
+					newKey = inputParams['newPassword']
+
+				if self.getAuthUser().useEncryption != inputParams['useEncryption']:
+					if inputParams['useEncryption']:
+						oldKey = None
+						newKey = self.getPassword()
+					else:
+						oldKey =  self.getPassword()
+						newKey = None
+
+				print oldKey
+				print newKey
+				spending.updateEncryptedData(self.getAuthUser().id, oldKey, newKey)
+
+			del inputParams['login']
+			del inputParams['password']
+			if 'newPassword' in inputParams and inputParams['newPassword']:
+				inputParams['password'] = inputParams['newPassword']
+			if 'newPassword' in inputParams:
+				del inputParams['newPassword']
+			if 'confirmNewPassword' in inputParams:
+				del inputParams['confirmNewPassword']
+
+
+			user = User()
+			user.update(login, **inputParams)
+
 		return self.prepareResult({})
 
 		

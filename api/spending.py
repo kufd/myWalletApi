@@ -128,6 +128,32 @@ class Spending:
 		
 		return result
 	
+	def updateEncryptedData(self, userId, oldKey, newKey):
+		"""
+		This method must be called when user's password is changing
+		Or when encryption option for user is changing
+		if oldKey or newKey is None it means than amount was not encrypted or will not be encrypted
+		"""
+		amount = '';
+		updateExpression = '';
+
+		if oldKey == None:
+			amount = 'amount'
+		else:
+			amount = "AES_DECRYPT(amountEncrypted, "+web.db.sqlquote(oldKey)+")"
+
+		if newKey != None:
+			amount = "AES_ENCRYPT("+amount+", "+web.db.sqlquote(newKey)+")"
+			updateExpression = "SET amountEncrypted = "+amount+", amount = 0"
+		else:
+			updateExpression = "SET amount = "+amount+", amountEncrypted = ''"
+
+		spendingsNames = db.query(
+			"UPDATE "+self.__table+" \
+			"+updateExpression+" \
+			WHERE userId = '"+str(userId)+"'"
+		)
+
 class SpendingName:
 	
 	__table = "spendingName"
