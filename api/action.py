@@ -187,8 +187,8 @@ class Users(Action):
 		
 		with db.transaction():
 
+			''''update encrypted data'''
 			if self.getAuthUser().useEncryption and 'newPassword' in inputParams or self.getAuthUser().useEncryption != inputParams['useEncryption']:
-
 				spending = Spending()
 				oldKey = None
 				newKey = None
