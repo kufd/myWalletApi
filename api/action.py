@@ -131,7 +131,7 @@ class Spendings(Action):
 		if not spending.isExists(spendingId, userId):
 			raise NotFound('spending not found')
 
-''' Action  Spendings'''	
+''' Action  SpendingsTop'''	
 class SpendingsTop(Action):
 	
 	def GET(self):
@@ -140,7 +140,22 @@ class SpendingsTop(Action):
 		
 		topSpendingsList = spending.getTopSpendings(self.getAuthUserId())
 			
-		return self.prepareResult(topSpendingsList)		
+		return self.prepareResult(topSpendingsList)
+	
+''' Action  SpendingsAutocomplete'''	
+class SpendingsAutocomplete(Action):
+	
+	def GET(self):
+		
+		inputParams = web.input(_method='get')
+		
+		validators.spendingAutocomplete.get(inputParams)
+		
+		spendingName = SpendingName()
+		
+		spendingNamesList = spendingName.getForAutocomplete(inputParams['name'])
+			
+		return self.prepareResult(spendingNamesList)			
 
 ''' Action  AuthUsers'''	
 class AuthUsers(Action):

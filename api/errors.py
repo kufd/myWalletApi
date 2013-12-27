@@ -15,9 +15,12 @@ errors = {
 	112 : 'Wrong password',
 	113 : 'New password and its confirmation are not equal',
 	
-	114 : 'Length of name of spending must be greater than 1 and less than 255',
+	114 : 'Length of name of spending must be greater than 0 and less than 255',
 	115 : 'Amount of spending must be float number',
 	116 : 'Wrong date of spending',
+	
+	
+	117 : 'Wrong spending name to search for autocomplete. Length of name of spending must be greater than 1 and less than 255.',
 }
 
 def getMessage(code):

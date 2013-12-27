@@ -187,3 +187,21 @@ class SpendingName:
 			result = self.__add(**{'name': name,});
 			
 		return result
+	
+	def getForAutocomplete(self, name, limit=10):
+		
+		spendingsNames = db.query(
+			"SELECT  name \
+			FROM "+self.__table+" \
+			WHERE \
+				name LIKE '"+str(name)+"%' \
+			ORDER BY id\
+			LIMIT "+str(limit)
+		)
+		
+		result = list()
+		
+		for spendingsName in spendingsNames:
+			result.append(spendingsName.name)
+		
+		return result

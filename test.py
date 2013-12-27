@@ -43,6 +43,19 @@ def getTopSpendings():
 	
 	print
 	print
+	
+	
+def getSpendingAutocomplete():
+	
+	c = pycurl.Curl()
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/spendings/autocomplete/?name=fddf')
+	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+	c.setopt(pycurl.USERPWD, 'test13:1')
+	c.setopt(c.VERBOSE, True)
+	c.perform()
+	
+	print
+	print
 
 def updateSpending():
 	
@@ -118,7 +131,7 @@ def patchUser():
 	print
 		
 #addSpending()	
-getTopSpendings()
+getSpendingAutocomplete()
 
 
 

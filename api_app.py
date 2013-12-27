@@ -7,6 +7,7 @@ urls = (
 	'/v1/spendings/?', 'api.action.Spendings',
 	'/v1/spendings/([0-9]+)/?', 'api.action.Spendings',
 	'/v1/spendings/top/?', 'api.action.SpendingsTop',
+	'/v1/spendings/autocomplete/?', 'api.action.SpendingsAutocomplete',
 	'/v1/auth-users/', 'api.action.AuthUsers',
 	'/v1/users/?', 'api.action.Users',
 	'/v1/users/([^/]+)/?', 'api.action.Users'
