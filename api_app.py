@@ -18,24 +18,26 @@ web.config.debug = False
 
 	
 
-if __name__ == "__main__":	 
-	
-	def errorProcessor(handler): 
+def errorProcessor(handler): 
 		
-		result = ''
+	result = ''
 		
-		try:
-			result = handler() 
-		except web.HTTPError as e:
-			if e.__class__.__name__ == '_InternalError' :
-				raise api.exception.InternalError
-			else:
-				raise e 
-		return result
+	try:
+		result = handler() 
+	except web.HTTPError as e:
+		if e.__class__.__name__ == '_InternalError' :
+			raise api.exception.InternalError
+		else:
+			raise e 
+	return result
 	
-	app = web.application(urls, globals())
-	app.add_processor(errorProcessor)
+app = web.application(urls, globals(), autoreload=False)
+app.add_processor(errorProcessor)
+	
+if __name__ == "__main__":	
 	app.run()
+	
+application = app.wsgifunc()
 		
 	
 		
