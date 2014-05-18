@@ -194,7 +194,7 @@ class SpendingName:
 			"SELECT  name \
 			FROM "+self.__table+" \
 			WHERE \
-				name LIKE '"+str(name)+"%' \
+				name LIKE '"+str(name.encode("UTF-8"))+"%' \
 			ORDER BY id\
 			LIMIT "+str(limit)
 		)
