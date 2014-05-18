@@ -65,7 +65,7 @@ def patch(fields):
 			{
 				Required('login'): voluptuous.All(
 					unicode, 
-					voluptuous.Length(min=5, max=50, msg='101')
+					voluptuous.Length(min=4, max=50, msg='101')
 				),
 				'name': voluptuous.All(
 					unicode, 
@@ -111,7 +111,7 @@ def post(fields):
 			{
 				'login': voluptuous.All(
 					unicode, 
-					voluptuous.Length(min=5, max=50, msg='101'),
+					voluptuous.Length(min=4, max=50, msg='101'),
 					validateLogin
 				),
 				'name': voluptuous.All(
