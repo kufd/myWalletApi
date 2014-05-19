@@ -27,7 +27,7 @@ class Action:
 			if self.__auth_user == None:
 				raise Unauthorized('Wrong login or password')
 			
-			#web.header('Content-Type', 'text/json')
+			web.header('Content-Type', 'text/json')
 		
 	
 	def __parseAuthData(self):
