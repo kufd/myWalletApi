@@ -3,6 +3,7 @@ import re
 import base64
 import json
 import validators
+import reports
 from user import *
 from spending import *
 from exception import *
@@ -240,5 +241,26 @@ class Users(Action):
 			user.update(login, **inputParams)
 
 		return self.prepareResult({})
+	
+	
+''' Action  ReportsGroup'''	
+class ReportGroupBySpengingName(Action):
+	
+	def GET(self):
+		
+		inputParams = web.input(dateBegin=None, dateEnd=None, _method='get')
+		
+		report = reports.GroupBySpengingName()
+		
+		if self.getAuthUser().useEncryption:
+			report.setEncryptionKey(self.getPassword())
+		
+		data = report.getData(
+			self.getAuthUserId(), 
+			dateBegin = inputParams.dateBegin, 
+			dateEnd = inputParams.dateEnd
+		)
+
+		return self.prepareResult({'data': data})
 
 		

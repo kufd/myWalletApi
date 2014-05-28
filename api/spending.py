@@ -9,6 +9,9 @@ class Spending:
 	__fieldsUpdateAllowed = ('date', 'spendingNameId', 'amount', 'amountEncrypted')
 	
 	__encryptionKey = None
+	
+	def getTableName(self):
+		return self.__table
 		
 	def add(self, **fields):
 

@@ -10,7 +10,8 @@ urls = (
 	'/v1/spendings/autocomplete/?', 'api.action.SpendingsAutocomplete',
 	'/v1/auth-users/', 'api.action.AuthUsers',
 	'/v1/users/?', 'api.action.Users',
-	'/v1/users/([^/]+)/?', 'api.action.Users'
+	'/v1/users/([^/]+)/?', 'api.action.Users',
+	'/v1/reports/group-by-spending-name/?', 'api.action.ReportGroupBySpengingName'
 )
 
 web.config.debug = False
