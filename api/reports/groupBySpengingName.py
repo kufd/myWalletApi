@@ -24,9 +24,9 @@ class GroupBySpengingName:
 			
 		fieldsToSelect = ['spendingNameId']
 		if self.__encryptionKey:
-			fieldsToSelect.append(str("SUM(AES_DECRYPT(" + spending.getTableName() + ".amountEncrypted, "+web.db.sqlquote(self.__encryptionKey)+")) AS amount "))
+			fieldsToSelect.append(str("ROUND(SUM(AES_DECRYPT(" + spending.getTableName() + ".amountEncrypted, "+web.db.sqlquote(self.__encryptionKey)+")), 2) AS amount "))
 		else:
-			fieldsToSelect.append("SUM(" + spending.getTableName() + ".amount)  AS amount")
+			fieldsToSelect.append("ROUND(SUM(" + spending.getTableName() + ".amount), 2)  AS amount")
 		fieldsToSelect.append(spendingName.getTableName() + ".name AS spendingName") 
  		
  		fieldsToSelect = ', '.join(fieldsToSelect)
