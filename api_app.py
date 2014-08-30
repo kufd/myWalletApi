@@ -11,7 +11,8 @@ urls = (
 	'/v1/auth-users/', 'api.action.AuthUsers',
 	'/v1/users/?', 'api.action.Users',
 	'/v1/users/([^/]+)/?', 'api.action.Users',
-	'/v1/reports/group-by-spending-name/?', 'api.action.ReportGroupBySpengingName'
+	'/v1/reports/group-by-spending-name/?', 'api.action.ReportGroupBySpengingName',
+	'/v1/reports/amount-by-period/?', 'api.action.ReportAmountByPeriod'
 )
 
 web.config.debug = False

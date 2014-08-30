@@ -241,7 +241,7 @@ class Users(Action):
 		return self.prepareResult({})
 	
 	
-''' Action  ReportsGroup'''	
+''' Action  ReportGroupBySpengingName'''	
 class ReportGroupBySpengingName(Action):
 	
 	def GET(self):
@@ -261,4 +261,24 @@ class ReportGroupBySpengingName(Action):
 
 		return self.prepareResult({'data': data})
 
+''' Action  ReportAmountByPeriod'''
+class ReportAmountByPeriod(Action):
+	
+	def GET(self):
 		
+		inputParams = web.input(period=None, spendingNameId=None, dateBegin=None, dateEnd=None, _method='get')
+		
+		report = reports.AmountByPeriod()
+		
+		if self.getAuthUser().useEncryption:
+			report.setEncryptionKey(self.getPassword())
+			
+		data = report.getData(
+			self.getAuthUserId(),
+			inputParams.period,
+			inputParams.spendingNameId,
+			inputParams.dateBegin,
+			inputParams.dateEnd
+		)
+
+		return self.prepareResult({'data': data})		

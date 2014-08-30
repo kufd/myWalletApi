@@ -141,9 +141,21 @@ def getReportGroupBySpengingName():
 	
 	print
 	print
+	
+def getReportAmountByPeriod():
+	
+	c = pycurl.Curl()
+	c.setopt(pycurl.URL, 'http://0.0.0.0:8080/v1/reports/amount-by-period/?period=month&dateBegin=2013-09-23&dateEnd=2014-11-23')
+	c.setopt(pycurl.HTTPHEADER, ['Accept: application/json'])
+	c.setopt(pycurl.USERPWD, 'kufd:paralelepiped')
+	c.setopt(c.VERBOSE, True)
+	c.perform()
+	
+	print
+	print
 		
 #addSpending()	
-getReportGroupBySpengingName()
+getReportAmountByPeriod()
 
 
 
