@@ -12,7 +12,7 @@ class AmountByPeriod:
 	def setEncryptionKey(self, encryptionKey):
 		self.__encryptionKey = encryptionKey
 		
-	def getData(self, userId, period, spendingNameId = None, dateBegin = None, dateEnd = None):
+	def getData(self, userId, period, spendingNameInputParam = None, dateBegin = None, dateEnd = None):
 		
 		if not period in self.__periods:
 			raise Exception('Wrong period')
@@ -21,12 +21,12 @@ class AmountByPeriod:
 		spending = Spending()
 		
 		where = spending.getTableName() + ".userId = " + str(userId)
-		if spendingNameId:
-			where += " AND " + spending.getTableName() + ".spendingNameId = '" + spendingNameId + "'"
+		if spendingNameInputParam:
+			where += " AND " + spendingName.getTableName() + ".name = " + web.db.sqlquote(spendingNameInputParam)
 		if dateBegin:
-			where += " AND " + spending.getTableName() + ".date >= '" + dateBegin + "'"
+			where += " AND " + spending.getTableName() + ".date >= " + web.db.sqlquote(dateBegin)
 		if dateEnd:
-			where += " AND " + spending.getTableName() + ".date <= '" + dateEnd + "'"
+			where += " AND " + spending.getTableName() + ".date <= " + web.db.sqlquote(dateEnd)
 			
 		fieldsToSelect = ['YEAR(date) AS year']
 		if self.__encryptionKey:
@@ -47,6 +47,7 @@ class AmountByPeriod:
 		spendings = db.query(
 			"SELECT " + (', '.join(fieldsToSelect)) + "\
 			FROM " + spending.getTableName() + " \
+			JOIN " + spendingName.getTableName() + " ON (" + spendingName.getTableName() + ".id = " + spending.getTableName() + ".spendingNameId) \
 			WHERE " + where + "\
 			GROUP BY " + (', '.join(fieldsToGroup))
 		)

@@ -266,7 +266,7 @@ class ReportAmountByPeriod(Action):
 	
 	def GET(self):
 		
-		inputParams = web.input(period=None, spendingNameId=None, dateBegin=None, dateEnd=None, _method='get')
+		inputParams = web.input(period=None, spendingName=None, dateBegin=None, dateEnd=None, _method='get')
 		
 		report = reports.AmountByPeriod()
 		
@@ -276,7 +276,7 @@ class ReportAmountByPeriod(Action):
 		data = report.getData(
 			self.getAuthUserId(),
 			inputParams.period,
-			inputParams.spendingNameId,
+			inputParams.spendingName,
 			inputParams.dateBegin,
 			inputParams.dateEnd
 		)
